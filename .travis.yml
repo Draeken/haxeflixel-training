@@ -30,10 +30,8 @@ install:
       export AUDIODEV=null;
     fi
   # Install haxelibs
-  - haxelib install hxjava
   - haxelib install flixel
   - haxelib list
 
 script:
-  - haxe build-interp.hxml
-  - haxe build-java.hxml         && java -jar bin/Main.jar
+  - haxelib run lime test html5
