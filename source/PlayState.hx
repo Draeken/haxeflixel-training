@@ -4,11 +4,14 @@ import flixel.FlxState;
 
 class PlayState extends FlxState
 {
+	//public var level:TiledLevel;
+	private var _player:Player;
+
 	override public function create():Void
 	{
-		super.create();
-		var text = new flixel.text.FlxText(50, 50, 200, 'Yosh', 24, false);
-		add(text);
+		_player = new Player(20, 20);
+		add(_player);
+		super.create();		
 	}
 
 	override public function update(elapsed:Float):Void
