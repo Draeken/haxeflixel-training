@@ -34,4 +34,4 @@ install:
   - haxelib list
 
 script:
-  - haxelib run lime test html5
+  - haxelib run lime build html5
