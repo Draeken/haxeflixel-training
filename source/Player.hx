@@ -1,8 +1,8 @@
 package;
 
 import flixel.FlxSprite;
-import flixel.util.FlxColor;
 import flixel.FlxG;
+import flixel.FlxObject;
 import flixel.math.FlxPoint;
 
 class Player extends FlxSprite
@@ -12,8 +12,12 @@ class Player extends FlxSprite
     public function new(?X:Float=0, ?Y:Float=0)
     {
         super(X, Y);
-        makeGraphic(16, 16, FlxColor.BLUE);
+        loadGraphic(AssetPaths.tinybox__png, false, 16, 16);
+        setFacingFlip(FlxObject.LEFT, false, false);
+        setFacingFlip(FlxObject.RIGHT, true, false);
         drag.x = drag.y = 1600;
+        setSize(14, 8);
+        offset.set(4, 2);
     }
 
     override public function update(elapsed:Float):Void
@@ -42,17 +46,26 @@ class Player extends FlxSprite
             mA = -90;
             if (_left) { mA -= 45; }
             else if (_right) { mA += 45; }
+            facing = FlxObject.UP;
         }
         else if (_down)
         {
             mA = 90;
             if (_left) { mA += 45; }
             else if (_right) { mA -= 45; }
+            facing = FlxObject.DOWN;
         }
         else if (_left)
+        {
             mA = 180;
+            facing = FlxObject.LEFT;
+        }
         else if (_right)
+        {
+            facing = FlxObject.RIGHT;
             mA = 0;
+        }
+
 
         velocity.set(speed, 0);
         velocity.rotate(FlxPoint.weak(0, 0), mA);
