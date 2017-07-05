@@ -13,9 +13,9 @@ class Player extends FlxSprite
         setFacingFlip(FlxObject.LEFT, false, false);
         setFacingFlip(FlxObject.RIGHT, true, false);
 
-		maxVelocity.set(80, 250);
+		maxVelocity.set(200, 250);
 		acceleration.y = 400;
-		drag.x = maxVelocity.x;
+		drag.x = maxVelocity.x * 4;
     }
 
     override public function update(elapsed:Float):Void
@@ -30,12 +30,12 @@ class Player extends FlxSprite
 		
 		if (FlxG.keys.anyPressed([LEFT, A]))
 		{
-			acceleration.x = -maxVelocity.x * 4;
+			acceleration.x = -maxVelocity.x * 10;
 		}
 		
 		if (FlxG.keys.anyPressed([RIGHT, D]))
 		{
-			acceleration.x = maxVelocity.x * 4;
+			acceleration.x = maxVelocity.x * 10;
 		}
 		
 		if (FlxG.keys.anyJustPressed([SPACE, UP, W]) && isTouching(FlxObject.FLOOR))

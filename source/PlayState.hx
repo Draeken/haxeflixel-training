@@ -19,6 +19,9 @@ class PlayState extends FlxState
 	private var _player:Player;
 	private var _grpCoins:FlxTypedGroup<Coin>;
 
+	private var _topTeleporter:Teleporter;
+	private var _bottomTeleporter:Teleporter;
+
 	override public function create():Void
 	{
 		_map = new TiledMap(AssetPaths.tilemap__tmx);
@@ -29,6 +32,7 @@ class PlayState extends FlxState
 		_mWalls.follow();
 		_mWalls.setTileProperties(2, FlxObject.NONE);
 		_mWalls.setTileProperties(3, FlxObject.ANY);
+
 		add(_mWalls);
 
 		_grpCoins = new FlxTypedGroup<Coin>();
@@ -38,8 +42,13 @@ class PlayState extends FlxState
 
 		var tmpMapSpawn:TiledObjectLayer = cast _map.getLayer("spawn");
 		var tmpMapItems:TiledObjectLayer = cast _map.getLayer("items");
+		var tmpMapTeleporters:TiledObjectLayer = cast _map.getLayer("tp");
 		for (e in tmpMapSpawn.objects) { placeSpawn(e);	}
 		for (e in tmpMapItems.objects) { placeItems(e); }
+		for (e in tmpMapTeleporters.objects) { placeTeleporters(e); }
+
+		add(_topTeleporter);
+		add(_bottomTeleporter);
 
 		add(_player);
 		FlxG.camera.follow(_player, TOPDOWN, 1);
@@ -51,6 +60,8 @@ class PlayState extends FlxState
 		super.update(elapsed);
 		FlxG.collide(_player, _mWalls);
 		FlxG.overlap(_player, _grpCoins, onPlayerTouchCoin);
+		FlxG.overlap(_player, _topTeleporter, onPlayerTouchTeleporter);
+		FlxG.overlap(_player, _bottomTeleporter, onPlayerTouchTeleporter);
 	}
 
 	private function placeSpawn(e: TiledObject):Void
@@ -66,9 +77,29 @@ class PlayState extends FlxState
 		_grpCoins.add(new Coin(e.x, e.y));
 	}
 
+	private function placeTeleporters(e:TiledObject):Void
+	{
+		if (e.name == "top")
+			_topTeleporter = new Teleporter(e.name, e.x, e.y, e.width, e.height);
+		else if (e.name == "bottom")
+			_bottomTeleporter = new Teleporter(e.name, e.x, e.y, e.width, e.height);
+
+		
+		trace("TP size: ", e.width, e.height);
+	}
+
 	private function onPlayerTouchCoin(player:Player, coin:Coin):Void
 	{
 		if (!player.alive || !player.exists || !coin.alive || !coin.exists) { return; }
 		coin.kill();
+	}
+
+	private function onPlayerTouchTeleporter(player:Player, teleporter:Teleporter):Void
+	{
+		trace("Touched teleporter");
+		if (teleporter.Name == "top")
+			_player.y = _bottomTeleporter.y - 16;
+		else if (teleporter.Name == "bottom")
+			_player.y = _topTeleporter.y + 16;
 	}
 }
