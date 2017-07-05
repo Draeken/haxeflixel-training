@@ -10,12 +10,14 @@ import flixel.tile.FlxTilemap;
 import flixel.FlxObject;
 import flixel.FlxG;
 import flixel.FlxCamera.FlxCameraFollowStyle;
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 class PlayState extends FlxState
 {
 	private var _map:TiledMap;
 	private var _mWalls:FlxTilemap;
 	private var _player:Player;
+	private var _grpCoins:FlxTypedGroup<Coin>;
 
 	override public function create():Void
 	{
@@ -29,12 +31,16 @@ class PlayState extends FlxState
 		_mWalls.setTileProperties(3, FlxObject.ANY);
 		add(_mWalls);
 
+		_grpCoins = new FlxTypedGroup<Coin>();
+		add(_grpCoins);
+
 		_player = new Player();
-		var tmpMap:TiledObjectLayer = cast _map.getLayer("player");
-		for (e in tmpMap.objects)
-		{
-			placeEntities(e);
-		}
+
+		var tmpMapSpawn:TiledObjectLayer = cast _map.getLayer("spawn");
+		var tmpMapItems:TiledObjectLayer = cast _map.getLayer("items");
+		for (e in tmpMapSpawn.objects) { placeSpawn(e);	}
+		for (e in tmpMapItems.objects) { placeItems(e); }
+
 		add(_player);
 		FlxG.camera.follow(_player, TOPDOWN, 1);
 		super.create();
@@ -44,13 +50,25 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 		FlxG.collide(_player, _mWalls);
+		FlxG.overlap(_player, _grpCoins, onPlayerTouchCoin);
 	}
 
-	private function placeEntities(e: TiledObject):Void
+	private function placeSpawn(e: TiledObject):Void
 	{
 		if (e.name != "player") { return; }
 		_player.x = e.x;
 		_player.y = e.y;
+	}
 
+	private function placeItems(e:TiledObject):Void
+	{
+		if (e.name != "coin") { return; }
+		_grpCoins.add(new Coin(e.x, e.y));
+	}
+
+	private function onPlayerTouchCoin(player:Player, coin:Coin):Void
+	{
+		if (!player.alive || !player.exists || !coin.alive || !coin.exists) { return; }
+		coin.kill();
 	}
 }
