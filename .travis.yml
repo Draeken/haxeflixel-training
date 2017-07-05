@@ -31,7 +31,8 @@ install:
     fi
   # Install haxelibs
   - haxelib install flixel
-  - haxelib list
+  - haxelib install flixel-addons
+  - haxelib list  
 
 script:
   - haxelib run lime build html5
