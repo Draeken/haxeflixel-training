@@ -36,7 +36,7 @@
   <object id="33" name="bottom" x="127" y="337.5" width="65" height="10"/>
  </objectgroup>
  <objectgroup color="#4caf50" name="spawn">
-  <object id="1" name="player" x="255.333" y="31.3333" width="16" height="16"/>
+  <object id="1" name="player" x="151.333" y="200" width="16" height="16"/>
  </objectgroup>
  <objectgroup color="#ffeb3b" name="items">
   <object id="4" name="coin" x="195.833" y="148.667" width="8" height="8"/>

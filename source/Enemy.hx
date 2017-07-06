@@ -32,4 +32,9 @@ class Enemy extends FlxSprite
         _direction *= -1;
         velocity.x = _speed * _direction;
     }
+
+    public function resetTest():Void
+    {
+        velocity.x = _speed * _direction;
+    }
 }

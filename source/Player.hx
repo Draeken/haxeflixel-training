@@ -6,9 +6,13 @@ import flixel.FlxObject;
 
 class Player extends FlxSprite
 {
+    private var _initialX:Float;
+    private var _initialY:Float;
+
     public function new(?X:Float=0, ?Y:Float=0)
     {
         super(X, Y);
+
         loadGraphic(AssetPaths.tinybox__png, false);
         setFacingFlip(FlxObject.LEFT, false, false);
         setFacingFlip(FlxObject.RIGHT, true, false);
@@ -17,6 +21,15 @@ class Player extends FlxSprite
 		maxVelocity.set(200, 250);
 		acceleration.y = 400;
 		drag.x = maxVelocity.x * 4;
+    }
+
+    public function setInitialPosition(X:Float, Y:Float):Void
+    {
+        _initialX = X;
+        _initialY = Y;
+
+        x = _initialX;
+        y = _initialY;
     }
 
     override public function update(elapsed:Float):Void
@@ -43,5 +56,12 @@ class Player extends FlxSprite
 		{
 			velocity.y = -maxVelocity.y / 1.25;
 		}
-     }
+    }
+
+    public function respawn():Void
+    {
+        x = _initialX;
+        y = _initialY;
+        revive();
+    }
 }

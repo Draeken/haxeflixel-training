@@ -11,6 +11,7 @@ import flixel.FlxObject;
 import flixel.FlxG;
 import flixel.FlxCamera.FlxCameraFollowStyle;
 import flixel.group.FlxGroup.FlxTypedGroup;
+import flixel.util.FlxTimer;
 
 class PlayState extends FlxState
 {
@@ -20,11 +21,13 @@ class PlayState extends FlxState
 	private var _grpCoins:FlxTypedGroup<Coin>;
 	private var _grpEnemySpawners:FlxTypedGroup<EnemySpawner>;
 
-	private var _enemies:Array<Enemy>;
+	private var _enemies:FlxTypedGroup<Enemy>;
 
 	private var _teleporters:Array<Teleporter>;
 	private var _topTeleporter:Teleporter;
 	private var _bottomTeleporter:Teleporter;
+
+	private var _playerReviveTimer:FlxTimer;
 
 	override public function create():Void
 	{
@@ -42,13 +45,17 @@ class PlayState extends FlxState
 		_grpCoins = new FlxTypedGroup<Coin>();
 		add(_grpCoins);
 
-		_enemies = [];
+		_enemies =  new FlxTypedGroup<Enemy>();
+		add(_enemies);
+
 		_teleporters = [];
 
 		_grpEnemySpawners = new FlxTypedGroup<EnemySpawner>();
 		add(_grpEnemySpawners);
 
 		_player = new Player();
+
+		_playerReviveTimer = new FlxTimer();		
 
 		var tmpMapSpawn:TiledObjectLayer = cast _map.getLayer("spawn");
 		var tmpMapItems:TiledObjectLayer = cast _map.getLayer("items");
@@ -79,7 +86,10 @@ class PlayState extends FlxState
 		FlxG.collide(_player, _mWalls);
 
 		for (enemy in _enemies)
+		{
 			FlxG.collide(enemy, _mWalls, onEnemyCollideWall);
+			FlxG.overlap(_player, enemy, onPlayerTouchEnemy);
+		}
 
 		FlxG.overlap(_player, _grpCoins, onPlayerTouchCoin);
 
@@ -95,8 +105,7 @@ class PlayState extends FlxState
 	private function placeSpawn(e: TiledObject):Void
 	{
 		if (e.name != "player") { return; }
-		_player.x = e.x;
-		_player.y = e.y;
+		_player.setInitialPosition(e.x, e.y);
 	}
 
 	private function placeItems(e:TiledObject):Void
@@ -125,6 +134,29 @@ class PlayState extends FlxState
 		coin.kill();
 	}
 
+	private function onPlayerTouchEnemy(player:Player, enemy:Enemy):Void
+	{
+		if (!player.alive || !player.exists || !enemy.alive || !enemy.exists) { return; }
+
+		FlxObject.updateTouchingFlags(player, enemy);
+
+		if ((player.justTouched(FlxObject.WALL) && enemy.justTouched(FlxObject.WALL)) ||
+			(player.justTouched(FlxObject.UP) && enemy.justTouched(FlxObject.FLOOR)))
+		{
+			player.kill();
+			FlxG.camera.shake(.02, 0.5);
+			_playerReviveTimer.start(3, playerRespawn, 1);
+		}
+		else if (player.justTouched(FlxObject.DOWN) && enemy.justTouched(FlxObject.UP))
+			enemy.kill();
+
+	}
+
+	private function playerRespawn(timer:FlxTimer):Void
+	{
+		_player.respawn();
+	}
+
 	private function onObjectTouchTeleporter(entity:FlxObject, teleporter:Teleporter):Void
 	{
 		trace("Touched teleporter");
@@ -142,9 +174,6 @@ class PlayState extends FlxState
 
 	public function addEnemy(x:Float, y:Float):Void
 	{
-		var enemy:Enemy = new Enemy(x, y);
-		_enemies.push(enemy);
-
-		add(enemy);
+		_enemies.add(new Enemy(x, y));
 	}
 }
