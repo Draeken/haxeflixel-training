@@ -16,7 +16,7 @@ class Enemy extends FlxSprite
         setFacingFlip(FlxObject.LEFT, false, false);
         setFacingFlip(FlxObject.RIGHT, true, false);
 
-        _speed = 50;
+        _speed = 100;
 		acceleration.y = 400;
         _direction = 1;
         velocity.x = _speed * _direction;

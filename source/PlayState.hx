@@ -22,6 +22,7 @@ class PlayState extends FlxState
 
 	private var _enemies:Array<Enemy>;
 
+	private var _teleporters:Array<Teleporter>;
 	private var _topTeleporter:Teleporter;
 	private var _bottomTeleporter:Teleporter;
 
@@ -42,6 +43,7 @@ class PlayState extends FlxState
 		add(_grpCoins);
 
 		_enemies = [];
+		_teleporters = [];
 
 		_grpEnemySpawners = new FlxTypedGroup<EnemySpawner>();
 		add(_grpEnemySpawners);
@@ -52,16 +54,22 @@ class PlayState extends FlxState
 		var tmpMapItems:TiledObjectLayer = cast _map.getLayer("items");
 		var tmpMapTeleporters:TiledObjectLayer = cast _map.getLayer("tp");
 		var tmpMapEnemySpawners:TiledObjectLayer = cast _map.getLayer("mobSpawners");
+
 		for (e in tmpMapSpawn.objects) { placeSpawn(e);	}
 		for (e in tmpMapItems.objects) { placeItems(e); }
 		for (e in tmpMapTeleporters.objects) { placeTeleporters(e); }
 		for (e in tmpMapEnemySpawners.objects) { placeEnemySpawners(e); }
 
-		add(_topTeleporter);
-		add(_bottomTeleporter);
+		_teleporters.push(_topTeleporter);
+		_teleporters.push(_bottomTeleporter);
+
+		for (tp in _teleporters)
+			add(tp);
 
 		add(_player);
+		
 		FlxG.camera.follow(_player, FlxCameraFollowStyle.PLATFORMER, 1);
+
 		super.create();
 	}
 
@@ -74,8 +82,14 @@ class PlayState extends FlxState
 			FlxG.collide(enemy, _mWalls, onEnemyCollideWall);
 
 		FlxG.overlap(_player, _grpCoins, onPlayerTouchCoin);
-		FlxG.overlap(_player, _topTeleporter, onPlayerTouchTeleporter);
-		FlxG.overlap(_player, _bottomTeleporter, onPlayerTouchTeleporter);
+
+		for (tp in _teleporters)
+		{
+			FlxG.overlap(_player, tp, onObjectTouchTeleporter);
+
+			for (e in _enemies)
+				FlxG.overlap(e, tp, onObjectTouchTeleporter);
+		}
 	}
 
 	private function placeSpawn(e: TiledObject):Void
@@ -111,13 +125,13 @@ class PlayState extends FlxState
 		coin.kill();
 	}
 
-	private function onPlayerTouchTeleporter(player:Player, teleporter:Teleporter):Void
+	private function onObjectTouchTeleporter(entity:FlxObject, teleporter:Teleporter):Void
 	{
 		trace("Touched teleporter");
 		if (teleporter.Name == "top")
-			_player.y = _bottomTeleporter.y - 16;
+			entity.y = _bottomTeleporter.y - 16;
 		else if (teleporter.Name == "bottom")
-			_player.y = _topTeleporter.y + 16;
+			entity.y = _topTeleporter.y + 16;
 	}
 
 	private function onEnemyCollideWall(enemy:Enemy, wall:FlxObject):Void
