@@ -18,6 +18,9 @@ class PlayState extends FlxState
 	private var _mWalls:FlxTilemap;
 	private var _player:Player;
 	private var _grpCoins:FlxTypedGroup<Coin>;
+	private var _grpEnemySpawners:FlxTypedGroup<EnemySpawner>;
+
+	private var _enemies:Array<Enemy>;
 
 	private var _topTeleporter:Teleporter;
 	private var _bottomTeleporter:Teleporter;
@@ -38,20 +41,27 @@ class PlayState extends FlxState
 		_grpCoins = new FlxTypedGroup<Coin>();
 		add(_grpCoins);
 
+		_enemies = [];
+
+		_grpEnemySpawners = new FlxTypedGroup<EnemySpawner>();
+		add(_grpEnemySpawners);
+
 		_player = new Player();
 
 		var tmpMapSpawn:TiledObjectLayer = cast _map.getLayer("spawn");
 		var tmpMapItems:TiledObjectLayer = cast _map.getLayer("items");
 		var tmpMapTeleporters:TiledObjectLayer = cast _map.getLayer("tp");
+		var tmpMapEnemySpawners:TiledObjectLayer = cast _map.getLayer("mobSpawners");
 		for (e in tmpMapSpawn.objects) { placeSpawn(e);	}
 		for (e in tmpMapItems.objects) { placeItems(e); }
 		for (e in tmpMapTeleporters.objects) { placeTeleporters(e); }
+		for (e in tmpMapEnemySpawners.objects) { placeEnemySpawners(e); }
 
 		add(_topTeleporter);
 		add(_bottomTeleporter);
 
 		add(_player);
-		FlxG.camera.follow(_player, TOPDOWN, 1);
+		FlxG.camera.follow(_player, FlxCameraFollowStyle.PLATFORMER, 1);
 		super.create();
 	}
 
@@ -59,6 +69,10 @@ class PlayState extends FlxState
 	{
 		super.update(elapsed);
 		FlxG.collide(_player, _mWalls);
+
+		for (enemy in _enemies)
+			FlxG.collide(enemy, _mWalls, onEnemyCollideWall);
+
 		FlxG.overlap(_player, _grpCoins, onPlayerTouchCoin);
 		FlxG.overlap(_player, _topTeleporter, onPlayerTouchTeleporter);
 		FlxG.overlap(_player, _bottomTeleporter, onPlayerTouchTeleporter);
@@ -83,9 +97,12 @@ class PlayState extends FlxState
 			_topTeleporter = new Teleporter(e.name, e.x, e.y, e.width, e.height);
 		else if (e.name == "bottom")
 			_bottomTeleporter = new Teleporter(e.name, e.x, e.y, e.width, e.height);
+	}
 
-		
-		trace("TP size: ", e.width, e.height);
+	private function placeEnemySpawners(e:TiledObject):Void
+	{
+		if (e.name != "mobSpawner") { return; }
+		_grpEnemySpawners.add(new EnemySpawner(this, e.x, e.y));
 	}
 
 	private function onPlayerTouchCoin(player:Player, coin:Coin):Void
@@ -101,5 +118,19 @@ class PlayState extends FlxState
 			_player.y = _bottomTeleporter.y - 16;
 		else if (teleporter.Name == "bottom")
 			_player.y = _topTeleporter.y + 16;
+	}
+
+	private function onEnemyCollideWall(enemy:Enemy, wall:FlxObject):Void
+	{
+		if (enemy.justTouched(FlxObject.WALL))
+			enemy.switchDirection();
+	}
+
+	public function addEnemy(x:Float, y:Float):Void
+	{
+		var enemy:Enemy = new Enemy(x, y);
+		_enemies.push(enemy);
+
+		add(enemy);
 	}
 }
