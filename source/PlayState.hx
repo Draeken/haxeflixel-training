@@ -29,6 +29,8 @@ class PlayState extends FlxState
 
 	private var _playerReviveTimer:FlxTimer;
 
+	private var _bullets:FlxTypedGroup<Bullet>;
+
 	override public function create():Void
 	{
 		_map = new TiledMap(AssetPaths.tilemap__tmx);
@@ -53,10 +55,13 @@ class PlayState extends FlxState
 		_grpEnemySpawners = new FlxTypedGroup<EnemySpawner>();
 		add(_grpEnemySpawners);
 
-		_player = new Player();
-
+		_player = new Player(this);
 		_playerReviveTimer = new FlxTimer();		
 
+		_bullets = new FlxTypedGroup<Bullet>();
+		add(_bullets);
+
+		// Parse map
 		var tmpMapSpawn:TiledObjectLayer = cast _map.getLayer("spawn");
 		var tmpMapItems:TiledObjectLayer = cast _map.getLayer("items");
 		var tmpMapTeleporters:TiledObjectLayer = cast _map.getLayer("tp");
@@ -159,7 +164,6 @@ class PlayState extends FlxState
 
 	private function onObjectTouchTeleporter(entity:FlxObject, teleporter:Teleporter):Void
 	{
-		trace("Touched teleporter");
 		if (teleporter.Name == "top")
 			entity.y = _bottomTeleporter.y - 16;
 		else if (teleporter.Name == "bottom")
@@ -175,5 +179,10 @@ class PlayState extends FlxState
 	public function addEnemy(x:Float, y:Float):Void
 	{
 		_enemies.add(new Enemy(x, y));
+	}
+
+	public function addBullet(x:Float, y:Float, direction:Int):Void
+	{
+		_bullets.add(new Bullet(x, y, direction));
 	}
 }
