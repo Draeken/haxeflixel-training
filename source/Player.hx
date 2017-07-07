@@ -11,11 +11,11 @@ class Player extends FlxSprite
     private var _initialY:Float;
     private var _direction:Int;
 
-    public function new(PlayState:PlayState, ?X:Float=0, ?Y:Float=0)
+    public function new(playState:PlayState, ?x:Float = 0, ?y:Float = 0)
     {
-        super(X, Y);
+        super(x, y);
 
-        _playState = PlayState;
+        _playState = playState;
 
         loadGraphic(AssetPaths.tinybox__png, false);
         setFacingFlip(FlxObject.LEFT, false, false);
@@ -45,22 +45,29 @@ class Player extends FlxSprite
         super.update(elapsed);
     }
 
+    public function respawn():Void
+    {
+        x = _initialX;
+        y = _initialY;
+        revive();
+    }
+
     private function movement():Void
     {
         acceleration.x = 0;
-		
+
 		if (FlxG.keys.anyPressed([LEFT, A]))
 		{
 			acceleration.x = -maxVelocity.x * 10;
             _direction = -1;
 		}
-		
+
 		if (FlxG.keys.anyPressed([RIGHT, D]))
 		{
 			acceleration.x = maxVelocity.x * 10;
             _direction = 1;
 		}
-		
+
 		if (FlxG.keys.anyJustPressed([SPACE, UP, W]) && isTouching(FlxObject.FLOOR))
 		{
 			velocity.y = -maxVelocity.y / 1.25;
@@ -71,12 +78,5 @@ class Player extends FlxSprite
     {
         if (FlxG.keys.justPressed.CONTROL)
             _playState.addBullet(x + (width / 2.0), y + (height / 2.0), _direction);
-    }
-
-    public function respawn():Void
-    {
-        x = _initialX;
-        y = _initialY;
-        revive();
     }
 }

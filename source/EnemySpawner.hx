@@ -9,10 +9,10 @@ class EnemySpawner extends FlxSprite
     private var _playState:PlayState;
     private var _spawnTimer:FlxTimer;
 
-    public function new(PlayState:PlayState, ?X:Float=0, ?Y:Float=0)
+    public function new(playState:PlayState, ?x:Float = 0, ?y:Float = 0)
     {
-        super(X, Y);
-        _playState = PlayState;
+        super(x, y) ;
+        _playState = playState;
         visible = false;
         _spawnTimer = new FlxTimer().start(FlxG.random.int(1, 5), spawnEnemy, 3);
     }

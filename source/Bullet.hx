@@ -9,11 +9,11 @@ class Bullet extends FlxSprite
     private var _speed:Float = 100;
     private var _direction:Int;
 
-    public function new(X:Float, Y:Float, Direction:Int)
+    public function new(x:Float, y:Float, direction:Int)
     {
-        super(X, Y);
+        super(x, y);
         loadGraphic(AssetPaths.bullet__png, false, 8, 8);
-        _direction = Direction;
+        _direction = direction;
         velocity.x = _speed * _direction;
     }
 

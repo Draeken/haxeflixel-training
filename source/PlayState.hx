@@ -56,7 +56,7 @@ class PlayState extends FlxState
 		add(_grpEnemySpawners);
 
 		_player = new Player(this);
-		_playerReviveTimer = new FlxTimer();		
+		_playerReviveTimer = new FlxTimer();
 
 		_bullets = new FlxTypedGroup<Bullet>();
 		add(_bullets);
@@ -79,7 +79,7 @@ class PlayState extends FlxState
 			add(tp);
 
 		add(_player);
-		
+
 		FlxG.camera.follow(_player, FlxCameraFollowStyle.PLATFORMER, 1);
 
 		super.create();
@@ -171,9 +171,9 @@ class PlayState extends FlxState
 
 	private function onObjectTouchTeleporter(entity:FlxObject, teleporter:Teleporter):Void
 	{
-		if (teleporter.Name == "top")
+		if (teleporter.name == "top")
 			entity.y = _bottomTeleporter.y - 16;
-		else if (teleporter.Name == "bottom")
+		else if (teleporter.name == "bottom")
 			entity.y = _topTeleporter.y + 16;
 	}
 

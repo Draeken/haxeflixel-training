@@ -6,9 +6,9 @@ import flixel.tweens.FlxEase;
 
 class Coin extends FlxSprite
 {
-    public function new(?X:Float=0, ?Y:Float=0)
+    public function new(?x:Float = 0, ?y:Float = 0)
     {
-        super(X, Y);
+        super(x, y);
         loadGraphic(AssetPaths.coin__png, false, 8, 8);
     }
 
