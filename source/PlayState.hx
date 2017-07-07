@@ -94,6 +94,7 @@ class PlayState extends FlxState
 		{
 			FlxG.collide(enemy, _mWalls, onEnemyCollideWall);
 			FlxG.overlap(_player, enemy, onPlayerTouchEnemy);
+			FlxG.overlap(enemy, _bullets, onEnemyTouchBullet);
 		}
 
 		FlxG.overlap(_player, _grpCoins, onPlayerTouchCoin);
@@ -155,6 +156,12 @@ class PlayState extends FlxState
 		else if (player.justTouched(FlxObject.DOWN) && enemy.justTouched(FlxObject.UP))
 			enemy.kill();
 
+	}
+
+	private function onEnemyTouchBullet(enemy:Enemy, bullet:Bullet):Void
+	{
+		enemy.kill();
+		bullet.kill();
 	}
 
 	private function playerRespawn(timer:FlxTimer):Void
