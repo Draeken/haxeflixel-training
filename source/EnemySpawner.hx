@@ -14,7 +14,7 @@ class EnemySpawner extends FlxSprite
         super(x, y) ;
         _playState = playState;
         visible = false;
-        _spawnTimer = new FlxTimer().start(FlxG.random.int(1, 5), spawnEnemy, 3);
+        _spawnTimer = new FlxTimer().start(FlxG.random.int(1, 5), spawnEnemy);
     }
 
     override public function update(elapsed:Float):Void
@@ -24,7 +24,7 @@ class EnemySpawner extends FlxSprite
 
     private function spawnEnemy(timer:FlxTimer):Void
     {
-        timer.reset(FlxG.random.int(1, 5));
+        timer.reset(FlxG.random.int(10, 50));
         _playState.addEnemy(this.x, this.y);
     }
 }

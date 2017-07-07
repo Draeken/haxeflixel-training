@@ -1,5 +1,6 @@
 package;
 
+import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.tweens.FlxTween;
 import flixel.tweens.FlxEase;
@@ -21,6 +22,7 @@ class Coin extends FlxSprite
     {
         alive = false;
         FlxTween.tween(this, { alpha: 0, y: y - 16 }, 0.33, { ease: FlxEase.circOut, onComplete: finishKill });
+        FlxG.sound.play(AssetPaths.coin__wav);
     }
 
     private function finishKill(_):Void

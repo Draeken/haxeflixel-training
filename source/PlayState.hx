@@ -154,8 +154,10 @@ class PlayState extends FlxState
 			_playerReviveTimer.start(3, playerRespawn, 1);
 		}
 		else if (player.justTouched(FlxObject.DOWN) && enemy.justTouched(FlxObject.UP))
+		{
+			player.velocity.y = -100;
 			enemy.kill();
-
+		}
 	}
 
 	private function onEnemyTouchBullet(enemy:Enemy, bullet:Bullet):Void

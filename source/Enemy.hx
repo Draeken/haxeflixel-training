@@ -3,6 +3,8 @@ package;
 import flixel.FlxSprite;
 import flixel.FlxG;
 import flixel.FlxObject;
+import flixel.tweens.FlxTween;
+import flixel.tweens.FlxEase;
 
 class Enemy extends FlxSprite
 {
@@ -16,10 +18,11 @@ class Enemy extends FlxSprite
         setFacingFlip(FlxObject.LEFT, false, false);
         setFacingFlip(FlxObject.RIGHT, true, false);
 
-        _speed = 100;
-		acceleration.y = 400;
+        _speed = 0;
+		acceleration.y = 800;
         _direction = 1;
         velocity.x = _speed * _direction;
+        origin.y = height;
     }
 
     override public function update(elapsed:Float):Void
@@ -36,5 +39,26 @@ class Enemy extends FlxSprite
     public function resetTest():Void
     {
         velocity.x = _speed * _direction;
+    }
+
+    override public function kill():Void
+    {
+        alive = false;
+        // Shooting dead
+        // FlxTween.tween(this.scale, { x: 1.5, y: 0.1 }, 0.25, { ease: FlxEase.bounceInOut, onComplete: finishKill });
+        FlxTween.tween(this.scale, { x: 1.5, y: 0.1 }, 0.5, { ease: FlxEase.bounceOut, onComplete: finishKill });
+
+        var hitSounds = 
+        [
+            AssetPaths.hit1__wav,
+            AssetPaths.hit2__wav
+        ];
+
+        FlxG.sound.play(FlxG.random.getObject(hitSounds));
+    }
+
+    private function finishKill(_):Void
+    {
+        exists = false;
     }
 }

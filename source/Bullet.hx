@@ -6,7 +6,7 @@ import flixel.tweens.FlxEase;
 
 class Bullet extends FlxSprite
 {
-    private var _speed:Float = 100;
+    private var _speed:Float = 200;
     private var _direction:Int;
 
     public function new(x:Float, y:Float, direction:Int)
